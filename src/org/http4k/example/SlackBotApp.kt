@@ -23,17 +23,12 @@ object Settings {
 fun SlackBotApp(env: Environment = Environment.ENV): RoutingHttpHandler {
     val appRoutes = AppRoutes(Slack.getInstance(), TOKEN(env), CHANNEL(env))
     return routes(
-        "/kotlin-slackbot-github" bind POST to appRoutes.gitHub,
-        "/json/gson" bind GET to appRoutes.jackson,
+        "/github" bind POST to appRoutes.gitHub,
         "/" bind GET to appRoutes.home
     )
 }
 
-class AppRoutes(
-    slack: Slack,
-    token: String,
-    channel: String
-) {
+class AppRoutes(slack: Slack, token: String, channel: String) {
     val home: HttpHandler = {
         val response = slack.methods(token).chatPostMessage {
             it.channel(channel).text("Hello :wave:")
@@ -41,16 +36,12 @@ class AppRoutes(
         Response(OK).body("Response is: $response")
     }
 
-    val jackson: HttpHandler = {
-        Response(OK).body(Jackson.asFormatString(mapOf("hello" to "world")))
-    }
-
     val gitHub: HttpHandler = {
         val request = Jackson.asA<GithubPushEvent>(it.bodyString())
         val responses = mutableListOf<Any>()
 
         val response = slack.methods(token).chatPostMessage {
-            it.channel("#kotlin-slackbot")
+            it.channel(channel)
                 .text(
                     """
                     New commit pushed to `${request.repository.full_name}` by ${request.pusher.name}
