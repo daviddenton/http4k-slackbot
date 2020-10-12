@@ -5,7 +5,5 @@ import org.http4k.server.asServer
 
 fun main() {
     SlackBotApp()
-        .asServer(SunHttp(System.getenv("PORT").toIntOrNull() ?: 8080))
-        .start()
+        .asServer(SunHttp(8080)).start()
 }
-

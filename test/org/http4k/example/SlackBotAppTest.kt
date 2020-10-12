@@ -14,6 +14,6 @@ class SlackBotAppTest {
     @Test
     @Disabled
     fun `root route`() {
-        assertThat(SlackBotApp("token")(Request(GET, "/")), hasStatus(OK).and(hasBody("HELLO WORLD!")))
+        assertThat(SlackBotApp()(Request(GET, "/")), hasStatus(OK).and(hasBody("HELLO WORLD!")))
     }
 }
